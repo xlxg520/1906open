@@ -17,7 +17,7 @@ class IndexController extends Controller
     {
 
         //打印一下 是否可以接收到 post传过来的值
-        echo  "<pre>";print_r($request->input());echo "</pre>";
+//        echo  "<pre>";print_r($request->input());echo "</pre>";
 
 
          $pass1 = $request->input('pass1');
