@@ -14,7 +14,7 @@ class UserModel extends Model
     //生成 appid  规则 根据用户名 和 时间戳  进行MD5加密
     public   static  function  gernerateAppid($u_name)
     {
-      return  'LN'.substr(md5($u_name.time().mt_rand(11111,99999)),5,14);
+      return  'LN'.substr(md5($u_name.time().mt_rand(111111,999999)),5,14);
     }
 
 
