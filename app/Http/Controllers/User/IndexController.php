@@ -6,6 +6,9 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Model\UserModel;
 use App\Model\AppModel;
+use Illuminate\Support\Str;
+use  Illuminate\Support\Facades\Cookie;
+use  Illuminate\Support\Facades\Redis;
 
 class IndexController extends Controller
 {
@@ -67,31 +70,7 @@ class IndexController extends Controller
         echo "用户APP_ID:" .$app_id;echo"<br>";
         echo "用户APP_SECRET:" .$app_id;echo"<br>";
 
-
-
-
-
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     //用户登录
     public function  login()
@@ -119,10 +98,45 @@ class IndexController extends Controller
         if(!password_verify($pass,$u->pass) )
         {
             echo "密码不正确";die;
-        }else{
-            echo "恭喜你登录成功";
         }
-        
+
+        //登录成功
+        $token = Str::random(16);  //生成token  返回给客户端
+        Cookie::queue('token',$token,60);
+
+
+        //将token 保存到redis 中
+
+        $redis_h_token = 'h:token:'.$token;
+        $login_init = [
+            'uid'           =>  $u ->id,
+            'u_name'        =>$u->u_name,
+            'login_time'    =>time()
+        ];
+
+        Redis::hMset($redis_h_token,$login_init);
+        Redis::expire($redis_h_token,60*60);
+
+        echo  "登录成功，正在跳转至个人中心 ";
+
+    }
+
+    //个人中心
+    public  function  center()
+    {
+        echo  "欢迎 来到个人中心 一giao我里giaogiao";  echo  "<br>";
+        $token = Cookie::get('token');
+        echo "<pre>";print_r($token);echo"</pre>";
+
+        $redis_h_token = 'h:token:'.$token;
+        echo $key =  $redis_h_token;
+
+        $login_info = Redis::hgetAll($redis_h_token);
+        echo  "<pre>";print_r($login_info);echo "</pre>";
+
+
+
+
     }
 
 
